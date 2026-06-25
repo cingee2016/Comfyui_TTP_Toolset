@@ -199,7 +199,13 @@ class TTP_Image_Assy:
             crop_tile1 = tile1.crop((tile1.width - overlap_size + offset_left, 0, tile1.width - offset_right, tile1.height))
             crop_tile2 = tile2.crop((offset_left, 0, offset_left + blend_size, tile2.height))
             if crop_tile1.size != crop_tile2.size:
-                raise ValueError(f"Crop sizes do not match: {crop_tile1.size} vs {crop_tile2.size}")
+                # raise ValueError(f"Crop sizes do not match: {crop_tile1.size} vs {crop_tile2.size}")
+                # 强制将尺寸对齐为两者的最小值
+                min_width = min(crop_tile1.size[0], crop_tile2.size[0])
+                min_height = min(crop_tile1.size[1], crop_tile2.size[1])
+
+                crop_tile1 = crop_tile1.crop((0, 0, min_width, min_height))
+                crop_tile2 = crop_tile2.crop((0, 0, min_width, min_height))
 
             blended = Image.composite(crop_tile1, crop_tile2, mask)
             result = Image.new("RGB", (tile1.width + tile2.width - overlap_size, tile1.height))
